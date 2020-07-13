@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { createUrlResolverWithoutPackagePrefix } from '@angular/compiler';
-import { HttpClient } from '@angular/common/http';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
-import { AnimationFrameScheduler } from 'rxjs/internal/scheduler/AnimationFrameScheduler';
-import { Observable, throwError } from 'rxjs';
-import { catchError, retry, map } from 'rxjs/operators';
+import { Observable} from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import {GetCatService} from './get-cat.service';
 
 @Component({
@@ -13,49 +10,25 @@ import {GetCatService} from './get-cat.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
-  private showCat = false;
   public catBlob;
+  public catUrl$: Observable<SafeUrl>;
   public catUrl;
-  public reader = new FileReader();
-  public base64data;
-  public picUrl;
+  public dangerousUrl: string;
+  public subscription$;
 
-  constructor(private http: HttpClient, private sanitizer: DomSanitizer, private getCatService: GetCatService){}
-
-  public ngOnInit() {
-      }
+  constructor(private sanitizer: DomSanitizer, private getCatService: GetCatService) {}
 
   public showCatPic() {
-    this.showCat = true;
-    this.getCatService.getCatBlob().subscribe(
-      blob => this.catBlob = blob
+
+    this.catUrl$ = this.getCatService.getCatBlob().pipe(
+      tap((blob) => console.log('new blob', blob)),
+      map(blob => URL.createObjectURL(blob)),
+      map(dangerousUrl => this.sanitizer.bypassSecurityTrustUrl(dangerousUrl))
     );
-    this.catUrl = URL.createObjectURL(this.catBlob);
-    console.log(this.catUrl);
+    this.subscription$ = this.catUrl$.subscribe(url => console.log(url));
 
-    console.log(this.catBlob);
-
-
-    // this.catUrl = this.sanitizer.bypassSecurityTrustUrl this.reader.result;
-    // this.reader.onloadend(this.reader.result)
-    // console.log(this.catBlob);
-    // this.catUrl = URL.createObjectURL(this.catBlob);
-
-    // if (this.catUrl) {
-    //   console.log('cat available')
-    // }
-  }
-
-  public get shouldShowCat() {
-    return this.showCat;
-  }
-
-
-  public onClick() {
-    this.picUrl = '';
-    console.log('settingurl');
-    this.picUrl = 'https://cataas.com/cat';
+    this.subscription$.unsubscribe();
   }
 }
