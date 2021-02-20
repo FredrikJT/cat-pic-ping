@@ -4,6 +4,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable} from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import {GetCatService} from './get-cat.service';
+import * as firebaseui from 'firebaseui'
+import 'firebaseui/dist/firebaseui.css'
 
 @Component({
   selector: 'app-root',
