@@ -5,7 +5,7 @@ import { Observable} from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import {GetCatService} from './get-cat.service';
 import firebase from 'firebase/app';
-import * as firebaseAuth from 'firebase/auth';
+import 'firebase/auth';
 import * as firebaseStore from 'firebase/firestore';
 import * as firebaseui from 'firebaseui'
 import 'firebaseui/dist/firebaseui.css'
@@ -38,17 +38,24 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     firebase.initializeApp(this.firebaseConfig);
 
+    
+  }
+
+  public authenticate() {
     //Auth
     var provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithRedirect(provider);
 
+    console.log('auth with redirecrt');
     firebase.auth()
       .getRedirectResult()
       .then((result) => {
+        alert('success!');
         if (result.credential) {
+
           /** @type {firebase.auth.OAuthCredential} */
           var credential = result.credential;
-
+          console.log(credential)
           // This gives you a Google Access Token. You can use it to access the Google API.
           // var token = credential.accessToken;
           // ...
@@ -56,6 +63,7 @@ export class AppComponent implements OnInit {
         // The signed-in user info.
         var user = result.user;
       }).catch((error) => {
+        console.warn('error');
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
