@@ -1,0 +1,12 @@
+
+.main-container {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+}
+
+.inner-container {
+    max-width: 756px;
+    display: flex;
+    flex-direction: column;
+}

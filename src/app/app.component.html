@@ -1,8 +1,12 @@
-<h1>Cat cat cat</h1>
-<button (click)=showCatPic()>Show cat pic</button>
-
-<img [src]="this.catUrl$ | async" width="300px">
-<button (click)=authenticate()>Authenticate</button>
+<main class="main-container">
+    <div class="inner-container">
+        <h1>Cat cat cat</h1>
+        <button (click)=showCatPic()>Show cat pic</button>
+        
+        <img [src]="this.catUrl$ | async" width="300px">
+        <button (click)=authenticate()>Authenticate</button>
+    </div>
+</main>
 
 <!-- https://javascript.info/blob
 https://jsfiddle.net/wilt/1u9fgyh0/

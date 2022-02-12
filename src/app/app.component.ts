@@ -6,9 +6,8 @@ import { map, tap } from 'rxjs/operators';
 import {GetCatService} from './get-cat.service';
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import * as firebaseStore from 'firebase/firestore';
-import * as firebaseui from 'firebaseui'
 import 'firebaseui/dist/firebaseui.css'
+import { CreateAccessTokenService } from './services/create-access-token.service';
 
 @Component({
   selector: 'app-root',
@@ -33,12 +32,17 @@ export class AppComponent implements OnInit {
     measurementId: "G-ZTF6X6KTX9"
   };
 
-  constructor(private sanitizer: DomSanitizer, private getCatService: GetCatService) {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private getCatService: GetCatService,
+    private createAccessTokenService: CreateAccessTokenService) {}
 
   public ngOnInit(): void {
     firebase.initializeApp(this.firebaseConfig);
 
-    
+    this.createAccessTokenService.accessToken.subscribe(token => {
+      console.log(`TOKEN YAAY: ${token}`)
+    })
   }
 
   public authenticate() {
