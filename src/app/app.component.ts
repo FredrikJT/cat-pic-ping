@@ -4,7 +4,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable} from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import {GetCatService} from './get-cat.service';
-import firebase from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import {getDatabase, ref, set} from 'firebase/database';
 import 'firebase/auth';
 import 'firebaseui/dist/firebaseui.css'
 import { CreateAccessTokenService } from './services/create-access-token.service';
@@ -38,45 +39,23 @@ export class AppComponent implements OnInit {
     private createAccessTokenService: CreateAccessTokenService) {}
 
   public ngOnInit(): void {
-    firebase.initializeApp(this.firebaseConfig);
+    const app = initializeApp(this.firebaseConfig);
 
-    this.createAccessTokenService.accessToken.subscribe(token => {
-      console.log(`TOKEN YAAY: ${token}`)
-    })
+    // Get a reference to the database service
+    const database = getDatabase(app);
+
+
   }
 
-  public authenticate() {
-    //Auth
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithRedirect(provider);
+  //https://firebase.google.com/docs/database/web/read-and-write
 
-    console.log('auth with redirecrt');
-    firebase.auth()
-      .getRedirectResult()
-      .then((result) => {
-        alert('success!');
-        if (result.credential) {
-
-          /** @type {firebase.auth.OAuthCredential} */
-          var credential = result.credential;
-          console.log(credential)
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          // var token = credential.accessToken;
-          // ...
-        }
-        // The signed-in user info.
-        var user = result.user;
-      }).catch((error) => {
-        console.warn('error');
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
-      });
+  writeUserData(userId, name, email, imageUrl) {
+    const db = getDatabase();
+    set(ref(db, 'users/' + userId), {
+      username: name,
+      email: email,
+      profile_picture : imageUrl
+    });
   }
 
   public showCatPic() {
